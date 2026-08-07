@@ -1,0 +1,33 @@
+name: New Board Item
+description: Suggest a to do to fulfill a project's goal
+title: "[Board Item]: "
+labels: ["task"]
+type: Task
+projects: ["sparkweavers/1"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggest a board item to help fulfill a project's goal.
+  - type: textarea
+    id: solution-description
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+      placeholder: |
+        Describe the board item and what it should accomplish...
+
+        - [ ] Task 1
+        - [ ] Task 2
+        - [ ] Task 3
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context or details about this board item.
+      placeholder: Any additional information that might help...
+    validations:
+      required: false

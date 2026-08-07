@@ -1,0 +1,70 @@
+name: New Experiment
+description: Create a new experiment to test a hypothesis and measure success.
+title: "[Experiment]: "
+labels: ["task"]
+type: Task
+projects: ["sparkweavers/1"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a new user experiment! We will test the product here.
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+      description: Describe the hypothesis you would like to test. A hypothesis is an unproven assumption that we want to validate through experimentation.
+      placeholder: "Example: Users can be better understood with GPT Transcribe than with Amazon Transcribe."
+    validations:
+      required: true
+  - type: textarea
+    id: experiment-procedure
+    attributes:
+      label: Experiment Procedure
+      description: Describe the step-by-step process of how the experiment will be conducted.
+      placeholder: |
+        Example:
+        - Test GPT Transcribe for 2 weeks
+        - Test Amazon Transcribe for 2 weeks
+        - Record data for both variants sequentially
+    validations:
+      required: true
+  - type: dropdown
+    id: duration
+    attributes:
+      label: Expected Duration
+      description: How long do you expect this experiment to run?
+      options:
+        - 1 week
+        - 2 weeks
+        - 1 month
+        - 2+ months
+        - Other (specify in procedure)
+    validations:
+      required: true
+  - type: textarea
+    id: potential-errors
+    attributes:
+      label: Potential Sources of Error
+      description: List possible factors that could affect the experiment results.
+      placeholder: |
+        - Different devices may have varying characteristics and behaviors
+        - Rooms have different acoustics
+        - Internet speed could affect transcription quality
+        - User behavior variations
+        - Environmental factors
+    validations:
+      required: true
+  - type: textarea
+    id: success-metrics
+    attributes:
+      label: Success Metrics
+      description: How will you measure the success of this experiment? What specific metrics will you track?
+      placeholder: |
+        - Number of questions and answers recorded
+        - Error rate measurements
+        - User satisfaction scores
+        - Performance benchmarks
+    validations:
+      required: true

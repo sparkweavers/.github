@@ -1,0 +1,78 @@
+name: Bug Report
+description: Create a report to help us improve
+title: "[Bug]: "
+labels: ["bug"]
+type: Bug
+projects: ["sparkweavers/1"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please provide detailed information to help us resolve the issue.
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what happened...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: What should have happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem.
+      placeholder: Paste screenshots here...
+    validations:
+      required: false
+  - type: dropdown
+    id: incident-level
+    attributes:
+      label: Incident Level
+      description: How many users are affected by this bug?
+      options:
+        - "Critical - All users affected, system down"
+        - "High - Many users affected, major functionality broken"
+        - "Medium - Some users affected, workaround available"
+        - "Low - Few users affected, minor issue"
+        - "Cosmetic - UI/UX issue, no functional impact"
+      default: 2
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform / Module and version
+      description: Describe the platform and version where the bug occurred
+      placeholder: "Example: Windows 10, Chrome 91, Module v2.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here.
+      placeholder: Any additional information that might help...
+    validations:
+      required: false

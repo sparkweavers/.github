@@ -1,0 +1,57 @@
+name: New Project
+description: Describe why and what we want to do here and how we can measure the success
+title: "[Project]: "
+labels: ["Project"]
+type: Feature
+projects: ["sparkweavers/1"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Create a new project with clear goals and success metrics.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe for whom, what and why you want to do this item.
+      placeholder: |
+        As a [user], I want to ____, so that I _____.
+
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+      description: If this item is not part of an Epic or Project that already has a hypothesis, describe a hypothesis that you would like to proof and that we measure against later.
+      placeholder: |
+        Format: Because of X, if we do Y, we expect Z to happen.
+
+        X: Because many emergency cases occur after business hours,
+        Y: if we implement an emergency bot that automatically assigns a technician,
+        Z: we expect to increase our automation rate and reduce our costs.
+    validations:
+      required: true
+  - type: textarea
+    id: success-metrics
+    attributes:
+      label: How can I measure my success?
+      description: Related to the Hypothesis, describe how you would like to measure the success of the item.
+      placeholder: |
+        Examples:
+        - [ ] We have identified the need (qualitative)
+        - [ ] We have found the right solution (qualitative)
+        - [ ] This many users have used this flow (quantitative)
+        - [ ] We increase the automation rate by 2% (quantitative)
+    validations:
+      required: true
+  - type: textarea
+    id: other-notes
+    attributes:
+      label: Other notes
+      description: Any additional notes or context for this project.
+      placeholder: Additional information, dependencies, constraints, etc.
+    validations:
+      required: false
