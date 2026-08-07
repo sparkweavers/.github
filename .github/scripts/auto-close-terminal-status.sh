@@ -18,42 +18,50 @@ ORG="${ORG:-sparkweavers}"
 PROJECT_NUMBER="${PROJECT_NUMBER:-1}"
 DRY_RUN="${DRY_RUN:-false}"
 
-read -r -d '' ITEMS_QUERY <<'GRAPHQL' || true
-query($org: String!, $number: Int!, $cursor: String) {
-  organization(login: $org) {
-    projectV2(number: $number) {
-      items(first: 100, after: $cursor) {
-        pageInfo { hasNextPage endCursor }
-        nodes {
-          isArchived
-          fieldValueByName(name: "Status") {
-            ... on ProjectV2ItemFieldSingleSelectValue { name }
-          }
-          content {
-            __typename
-            ... on Issue {
-              id
-              number
-              state
-              title
-              repository { nameWithOwner }
+# Walk the board one page at a time.
+#
+# This deliberately does not use `gh api graphql --paginate`: that flag only
+# advances the cursor when the query declares a variable named exactly
+# $endCursor. With any other name it silently refetches the first page over and
+# over, which yields duplicates and never reaches later pages.
+fetch_items() {
+  local cursor="" after page
+
+  while :; do
+    if [[ -z "$cursor" ]]; then
+      after="null"
+    else
+      after="\"$cursor\""
+    fi
+
+    page="$(gh api graphql -f query="
+      query {
+        organization(login: \"$ORG\") {
+          projectV2(number: $PROJECT_NUMBER) {
+            items(first: 100, after: $after) {
+              pageInfo { hasNextPage endCursor }
+              nodes {
+                isArchived
+                fieldValueByName(name: \"Status\") {
+                  ... on ProjectV2ItemFieldSingleSelectValue { name }
+                }
+                content {
+                  __typename
+                  ... on Issue {
+                    id
+                    number
+                    state
+                    title
+                    repository { nameWithOwner }
+                  }
+                }
+              }
             }
           }
         }
-      }
-    }
-  }
-}
-GRAPHQL
+      }")"
 
-# Collect every open issue on the board that sits in a terminal status.
-# jq maps the status to the close reason; anything else is dropped.
-candidates="$(
-  gh api graphql --paginate \
-    -f query="$ITEMS_QUERY" \
-    -F org="$ORG" \
-    -F number="$PROJECT_NUMBER" \
-    --jq '
+    jq -c '
       .data.organization.projectV2.items.nodes[]
       | select(.isArchived | not)
       | select(.content.__typename == "Issue")
@@ -68,9 +76,14 @@ candidates="$(
           if .status == "Done" or .status == "Published" then "COMPLETED"
           elif .status == "Cancelled" then "NOT_PLANNED"
           else null end)}
-      | select(.reason != null)
-    '
-)"
+      | select(.reason != null)' <<<"$page"
+
+    [[ "$(jq -r '.data.organization.projectV2.items.pageInfo.hasNextPage' <<<"$page")" == "true" ]] || break
+    cursor="$(jq -r '.data.organization.projectV2.items.pageInfo.endCursor' <<<"$page")"
+  done
+}
+
+candidates="$(fetch_items)"
 
 if [[ -z "$candidates" ]]; then
   echo "Nothing to close. Every open board item is in a non-terminal status."
@@ -107,7 +120,7 @@ while IFS= read -r item; do
     echo "::warning::failed to close $ref (status $status)"
     failed=$((failed + 1))
   fi
-done <<<"$(jq -c '.' <<<"$candidates")"
+done <<<"$candidates"
 
 echo "closed=$closed failed=$failed"
 
