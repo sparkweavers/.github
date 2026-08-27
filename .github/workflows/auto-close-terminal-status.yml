@@ -1,0 +1,50 @@
+name: Auto-close issues in terminal board status
+
+# The built-in "Auto-close issue" project workflow takes a single status value
+# and always closes as "completed". The Sparkweaving Board has three terminal
+# statuses and needs two different close reasons, so it is polled here.
+#
+# Project events (projects_v2_item) cannot trigger Actions workflows, which is
+# why this runs on a schedule rather than on the status change itself.
+
+on:
+  schedule:
+    # Every 30 minutes. Each run bills a full minute of private-repo Actions
+    # time, so raising the frequency raises the bill roughly proportionally.
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Log what would be closed without closing anything'
+        type: boolean
+        default: false
+
+concurrency:
+  group: auto-close-terminal-status
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mint installation token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.SPARKWEAVER_BOT_APP_ID }}
+          private-key: ${{ secrets.SPARKWEAVER_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: issues
+
+      - name: Close issues in terminal status
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          ORG: ${{ github.repository_owner }}
+          PROJECT_NUMBER: '1'
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: ./.github/scripts/auto-close-terminal-status.sh
