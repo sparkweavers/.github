@@ -1,9 +1,10 @@
 <!--
-LENGTH LIMIT. This applies to everyone, and to AI-generated descriptions in particular.
+HARD LIMIT: 30 LINES. This applies to everyone, and to AI-generated descriptions in
+particular.
 
-The whole description must fit on one screen without scrolling. Roughly 150 to 250
-words plus the test steps. If it does not fit, either the pull request is too big or
-the text is padded.
+Count the finished description after you delete these comments. Blank lines count.
+Over 30 lines means either the pull request is too big or the text is padded. Split
+the pull request or cut the text. Do not negotiate with the number.
 
 The one rule that does the work: write nothing the diff already says. The reviewer
 sees the changed files, the names and the lines. What they cannot see is why this
