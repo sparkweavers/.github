@@ -1,0 +1,45 @@
+name: Auto-close issues in terminal board status
+
+# Polled rather than event-driven because projects_v2_item is an organization
+# event and cannot trigger a workflow. Rationale is in the script header.
+
+on:
+  schedule:
+    # 06:00 UTC. An issue can sit closed-pending for up to a day.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Log what would be closed without closing anything'
+        type: boolean
+        default: false
+
+concurrency:
+  group: auto-close-terminal-status
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mint installation token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.SPARKWEAVER_BOT_APP_ID }}
+          private-key: ${{ secrets.SPARKWEAVER_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: issues
+
+      - name: Close issues in terminal status
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          ORG: ${{ github.repository_owner }}
+          PROJECT_NUMBER: '1'
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: ./.github/scripts/auto-close-terminal-status.sh
