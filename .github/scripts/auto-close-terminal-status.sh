@@ -3,11 +3,11 @@
 # Close issues whose Sparkweaving Board status has reached a terminal value.
 #
 # The built-in "Auto-close issue" project workflow accepts exactly one status
-# value and always closes as "completed". We need three values and two different
+# value and always closes as "completed". We need two values and two different
 # close reasons, so the board is polled here instead.
 #
-#   Done, Published -> closed as COMPLETED
-#   Cancelled       -> closed as NOT_PLANNED
+#   Published -> closed as COMPLETED
+#   Cancelled -> closed as NOT_PLANNED
 #
 # Requires GH_TOKEN with organization projects: read and issues: write.
 # Set DRY_RUN=true to log what would happen without closing anything.
@@ -73,7 +73,7 @@ fetch_items() {
           title: .content.title
         }
       | . + {reason: (
-          if .status == "Done" or .status == "Published" then "COMPLETED"
+          if .status == "Published" then "COMPLETED"
           elif .status == "Cancelled" then "NOT_PLANNED"
           else null end)}
       | select(.reason != null)' <<<"$page"
